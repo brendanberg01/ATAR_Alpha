@@ -1,17 +1,38 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "mcu/io/DigitalOutputPin.hpp"
+#include "mcu/io/AnalogInputController.hpp"
+#include "mcu/io/AnalogInputPin.hpp"
+
 #include "mcu/usart/UARTConnection.hpp"
+
+#include "periph/LightEmittingDiode.hpp"
+#include "periph/Acceleromter.hpp"
 
 
 int main ()
 {
-    DigitalOutputPin dop(&PORTB, PB5);
-    dop.Disable();
+    // TODO: interrupt handler
+    UARTConnection uartCentral(0, 38400);
 
-    UARTConnection uartCentral(0, 115200);
-    int i = 1000;
+    SingleColorLED ledHeartbeat;
+    ledHeartbeat.RegisterPin(&PORTB, PB5);
+
+    AnalogInputController analogInputController;
+
+    // TODO: outsource
+    AnalogInputPin sharpRF(0x01, 4);
+    analogInputController.RegisterAnalogPin(&sharpRF);
+    AnalogInputPin sharpRB(0x02, 4);
+    analogInputController.RegisterAnalogPin(&sharpRB);
+    AnalogInputPin sharpLB(0x03, 4);
+    analogInputController.RegisterAnalogPin(&sharpLB);
+    AnalogInputPin sharpLF(0x00, 4);
+    analogInputController.RegisterAnalogPin(&sharpLF);
+
+    Acceleromter acceleromter(0x04, 0xff, 0x05, analogInputController);
+
+    analogInputController.Enable();
 
     sei();
 
@@ -19,34 +40,7 @@ int main ()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
     while (true)
-    {
-        if (uartCentral.DataAvailable())
-        {
-            switch (uartCentral.ReadByte())
-            {
-                case '0':
-                    dop.Disable();
-                    uartCentral.WriteString("0\n");
-                    break;
-                case '1':
-                    dop.Enable();
-                    uartCentral.WriteString("1\n");
-                    break;
-                case 'e':
-                    uartCentral.WriteString("echo\n");
-                default:
-                    break;
-            }
-        }
-
-        if (i == 0)
-        {
-            i = 1000;
-            dop.Set(!dop.GetState());
-        }
-        --i;
-        _delay_ms(1);
-    }
+    { }
 #pragma clang diagnostic pop
 
 
