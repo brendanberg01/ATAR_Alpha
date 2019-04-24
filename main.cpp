@@ -2,10 +2,7 @@
 #include <util/delay.h>
 
 #include "mcu/io/AnalogInputController.hpp"
-#include "mcu/io/AnalogInputPin.hpp"
 
-#include "mcu/usart/UARTDataSource.hpp"
-#include "mcu/usart/UARTConnection.hpp"
 #include "mcu/usart/UARTInterruptSlaveConnection.hpp"
 
 #include "periph/Accelerometer.hpp"
@@ -39,11 +36,10 @@ int main ()
 
     Servo servo(0x02, 0x01, &PORTD, PD3);
 
-    DataSourceSensor dataSourceSensor(accelerometer,
-                                      rangeRF, rangeRB, rangeLB, rangeLF);
-
-    DataDestinationCentral dataDestinationCentral(ledHeartbeat, servo,
-                                                  accelerometer);
+    DataSourceSensor dataSourceSensor(
+        accelerometer, rangeRF, rangeRB, rangeLB, rangeLF);
+    DataDestinationCentral dataDestinationCentral(
+        ledHeartbeat, servo, accelerometer);
     UARTInterruptSlaveConnection uartCentral(
         0x00, 38400, dataDestinationCentral, 0x00, dataSourceSensor);
 

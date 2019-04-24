@@ -19,7 +19,7 @@ public:
     DataDestinationCentral (SingleColorLED& ledHeartbeat, Servo& servo,
                             Accelerometer& accelerometer);
 
-    void DispatchMessage (const char* message, uint8_t len) override;
+    void DispatchMessage (const unsigned char* message, uint8_t len) override;
 
 
 private:

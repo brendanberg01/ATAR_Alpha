@@ -18,13 +18,12 @@ DataSourceSensor::DataSourceSensor (Accelerometer& accelerometer,
 void DataSourceSensor::UpdateMessage ()
 {
     auto accelX = m_Accelerometer.GetAcceleration(0);
-    auto accelZ = m_Accelerometer.GetAcceleration(1);
-    auto angle = m_Accelerometer.GetClimbAngle(1, 0);
     m_Message[0] = accelX >> 8;
     m_Message[1] = accelX & 0xff;
+    auto accelZ = m_Accelerometer.GetAcceleration(1);
     m_Message[2] = accelZ >> 8;
     m_Message[3] = accelZ & 0xff;
-    m_Message[4] = angle;
+    m_Message[4] = m_Accelerometer.GetClimbAngle(1, 0);
 
     m_Message[5] = m_RangeRF.GetRawDistance();
     m_Message[6] = 0x00;
