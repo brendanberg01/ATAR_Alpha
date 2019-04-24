@@ -10,11 +10,13 @@
 
 #include "periph/Accelerometer.hpp"
 #include "periph/IRRangeFinder.hpp"
-#include "periph/ToggleSwitchCollection.hpp"
 #include "periph/LightEmittingDiode.hpp"
+#include "periph/Servo.hpp"
 
 #include "com/DataSourceSensor.hpp"
 #include "com/DataDestinationCentral.hpp"
+
+bool state;
 
 
 int main ()
@@ -30,25 +32,24 @@ int main ()
     IRRangeFinder rangeLB(0x03, analogInputController);
     IRRangeFinder rangeLF(0x00, analogInputController);
 
+    analogInputController.Enable();
+
     SingleColorLED ledHeartbeat;
     ledHeartbeat.RegisterPin(&PORTB, PB5);
 
-    // TODO: servo library
+    Servo servo(0x02, 0x01, &PORTD, PD3);
 
-    analogInputController.Enable();
+    DataSourceSensor dataSourceSensor(accelerometer,
+                                      rangeRF, rangeRB, rangeLB, rangeLF);
 
-    DataSourceSensor dataSourceSensor(accelerometer, rangeRF,
-                                      rangeRB, rangeLB, rangeLF);
-
-    DataDestinationCentral dataDestinationCentral(ledHeartbeat);
+    DataDestinationCentral dataDestinationCentral(ledHeartbeat, servo,
+                                                  accelerometer);
     UARTInterruptSlaveConnection uartCentral(
         0x00, 38400, dataDestinationCentral, 0x00, dataSourceSensor);
 
     sei();
 
-    _delay_ms(1000);
-
-    accelerometer.Calibrate();
+    servo.Enable();
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
