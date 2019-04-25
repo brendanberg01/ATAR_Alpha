@@ -26,13 +26,13 @@ void DataSourceSensor::UpdateMessage ()
     m_Message[4] = m_Accelerometer.GetClimbAngle(1, 0);
 
     m_Message[5] = m_RangeRF.GetRawDistance();
-    m_Message[6] = 0x00;
+    m_Message[6] = m_RangeRF.GetLinearizedDistance();
     m_Message[7] = m_RangeRB.GetRawDistance();
-    m_Message[8] = 0x00;
+    m_Message[8] = m_RangeRB.GetLinearizedDistance();
     m_Message[9] = m_RangeLB.GetRawDistance();
-    m_Message[10] = 0x00;
+    m_Message[10] = m_RangeLB.GetLinearizedDistance();;
     m_Message[11] = m_RangeLF.GetRawDistance();
-    m_Message[12] = 0x00;
+    m_Message[12] = m_RangeLF.GetLinearizedDistance();
 
     m_Message[13] = 0x00;
     m_Message[14] = 0x00;
